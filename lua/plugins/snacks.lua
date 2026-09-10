@@ -46,7 +46,14 @@ return {
                 enabled = true,
                 timeout = 3000,
             },
-            picker = { enabled = true },
+            picker = {
+                enabled = true,
+                on_show = function()
+                    vim.schedule(function()
+                        vim.cmd("stopinsert")
+                    end)
+                end,
+            },
             quickfile = { enabled = true },
             scope = { enabled = true },
             scroll = { enabled = true },
