@@ -31,7 +31,6 @@ map({ "n", "v" }, "<leader>cr", vim.lsp.buf.rename, { desc = "rename" })
 map("n", "<c-/>", function() Snacks.terminal() end, { desc = "Terminal (cwd)" })
 map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 
-map("n", "<leader>gg", function() Snacks.lazygit() end, { desc = "Lazygit (cwd)" })
 
 -- Clear search and stop snippet on escape
 map({ "i", "n", "s" }, "<esc>", function()
