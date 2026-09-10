@@ -7,7 +7,12 @@ return {
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
         opts = {
-            keymap = { preset = 'enter' },
+            keymap = {
+                preset = 'enter',
+                ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
+                ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
+                ['<Space>'] = { 'accept', 'fallback' },
+            },
 
             appearance = {
                 -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
