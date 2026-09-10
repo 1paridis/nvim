@@ -52,7 +52,6 @@ return {
                 -- rust
                 "rust-analyzer",
                 "codelldb", -- Rust debugger
-                "bacon",    -- Rust linter (alternative to rust-analyzer diagnostics)
             },
         },
         config = function(_, opts)

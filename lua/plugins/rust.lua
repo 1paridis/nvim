@@ -30,22 +30,16 @@ return {
                     vim.keymap.set("n", "<leader>dr", function()
                         vim.cmd.RustLsp("debuggables")
                     end, { desc = "Rust Debuggables", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>ca", function()
-                        vim.cmd.RustLsp('codeAction')
-                    end, { silent = true, buffer = bufnr, desc = "Code Action" })
                 end,
                 default_settings = {
                     -- rust-analyzer language server configuration
                     ["rust-analyzer"] = {
                         cargo = {
                             allFeatures = true,
-                            loadOutDirsFromCheck = true,
                             buildScripts = {
                                 enable = true,
                             },
                         },
-                        -- Add clippy lints for Rust if using rust-analyzer
-                        checkOnSave = true,
                         -- Enable diagnostics if using rust-analyzer
                         diagnostics = {
                             enable = true,
@@ -78,7 +72,7 @@ return {
         config = function(_, opts)
             local codelldb = vim.fn.exepath("codelldb")
             local codelldb_lib_ext = io.popen("uname"):read("*l") == "Linux" and ".so" or ".dylib"
-            local library_path = vim.fn.expand("$MASON/opt/lldb/lib/liblldb" .. codelldb_lib_ext)
+            local library_path = vim.fn.stdpath("data") .. "/mason/opt/lldb/lib/liblldb" .. codelldb_lib_ext
             opts.dap = {
                 adapter = require("rustaceanvim.config").get_codelldb_adapter(codelldb, library_path),
             }
