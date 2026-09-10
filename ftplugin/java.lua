@@ -23,6 +23,9 @@ local cmd = {
     jdtls_config_dir,
     "-data",
     jdtls_workspace_dir,
+    "--jvm-arg=-XX:+UseParallelGC",
+    "--jvm-arg=-Xms512m",
+    "--jvm-arg=-Xmx2G",
 }
 
 local lombok_jar = mason .. "/share/jdtls/lombok.jar"
@@ -54,18 +57,18 @@ local config = {
             },
             inlayHints = {
               parameterNames = {
-                enabled = "all",
+                enabled = "literals",
               },
             },
-            implementationCodeLens = "all",
+            implementationCodeLens = "none",
             referencesCodeLens = {
-                enabled = true
+                enabled = false
             },
             maven = {
-                downloadSources = true
+                downloadSources = false
             },
             gradle = {
-                downloadSources = true
+                downloadSources = false
             },
             configuration = {
                 updateBuildConfiguration = "interactive"
