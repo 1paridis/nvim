@@ -84,10 +84,3 @@ return {
 
 也可改用环境变量 `ARK_API_KEY`。默认模型为 `deepseek-v4-flash-ga-260731`，其余可选模型见 `lua/plugins/codecompanion.lua`。
 
-## 常见操作与维护
-
-- `:Lazy`：查看 / 管理插件，`u` 更新，`S` 同步
-- `:Lazy update`：更新所有插件
-- `:Mason`：管理 LSP、格式化器与调试器
-- `:checkhealth`：排查配置与依赖问题
-- `lazy-lock.json` 已在 `.gitignore` 中，不会随仓库提交；如需锁定版本可自行纳入版本管理
