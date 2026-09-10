@@ -1,15 +1,33 @@
+-- Terminate a session, then make sure the debuggee actually dies.
+--
+-- With `console = "integratedTerminal"` (nvim-jdtls default) java-debug starts
+-- the JVM through nvim-dap's `runInTerminal` reverse request, so nvim owns the
+-- process and the adapter's `terminateDebuggee` cannot kill it. Stopping the
+-- terminal job closes that gap; for adapters that own the process (codelldb,
+-- internalConsole) `term_buf` is nil and this is a no-op.
+local function kill_debuggee_terminal(session)
+  local term_buf = session and session.term_buf
+  if not (term_buf and vim.api.nvim_buf_is_valid(term_buf)) then
+    return
+  end
+  vim.defer_fn(function()
+    if vim.api.nvim_buf_is_valid(term_buf) then
+      local job = vim.b[term_buf].terminal_job_id
+      if job and job > 0 then
+        pcall(vim.fn.jobstop, job)
+      end
+    end
+  end, 300)
+end
+
+local function force_terminate()
+  require("dap").terminate({ disconnect_args = { terminateDebuggee = true } })
+end
+
 return {
   {
     "mfussenegger/nvim-dap",
     desc = "Debugging support. Requires language specific adapters to be configured. (see lang extras)",
-    dependencies = {
-      "rcarriga/nvim-dap-ui",
-      -- virtual text for the debugger
-      {
-        "theHamsta/nvim-dap-virtual-text",
-        opts = {},
-      },
-    },
 
     -- stylua: ignore
     keys = {
@@ -26,10 +44,8 @@ return {
       { "<S-F7>",     function() require("dap").step_out() end,                                             desc = "Step Out" },
       { "<F8>",       function() require("dap").step_over() end,                                            desc = "Step Over" },
       { "<leader>dP", function() require("dap").pause() end,                                                desc = "Pause" },
-      { "<leader>dr", function() require("dap").repl.toggle() end,                                          desc = "Toggle REPL" },
       { "<leader>ds", function() require("dap").session() end,                                              desc = "Session" },
       { "<leader>dt", function() require("dap").terminate() end,                                            desc = "Terminate" },
-      { "<leader>dw", function() require("dap.ui.widgets").hover() end,                                     desc = "Widgets" },
     },
 
     config = function()
@@ -62,29 +78,131 @@ return {
     end,
   },
 
-  -- fancy UI for the debugger
+  -- IDEA-style tabbed debug UI (bottom panel with switchable sections)
   {
-    "rcarriga/nvim-dap-ui",
-    dependencies = { "nvim-neotest/nvim-nio" },
+    "igorlfs/nvim-dap-view",
+    version = "1.*",
+    dependencies = { "mfussenegger/nvim-dap" },
+    -- Load eagerly so its listeners/auto_toggle and terminal handling are
+    -- registered before a session is started via any nvim-dap key.
+    event = "VeryLazy",
     -- stylua: ignore
     keys = {
-      { "<leader>du", function() require("dapui").toggle({}) end, desc = "Dap UI" },
-      { "<leader>de", function() require("dapui").eval() end,     desc = "Eval",  mode = { "n", "v" } },
+      { "<leader>du", function() require("dap-view").toggle() end,   desc = "Dap UI" },
+      { "<leader>de", function() require("dap-view").hover() end,    desc = "Eval", mode = { "n", "v" } },
+      { "<leader>dw", function() require("dap-view").add_expr() end, desc = "Watch Expression" },
+      { "<leader>dT", force_terminate, desc = "Terminate (kill debuggee)" },
     },
-    opts = {},
+    opts = {
+      winbar = {
+        -- Bottom "tabs"; order shown in the winbar.
+        -- "console" merges the program terminal into the same window.
+        sections = { "threads", "scopes", "watches", "breakpoints", "exceptions", "console" },
+        default_section = "console", -- open on the Console tab when a session starts
+        show_keymap_hints = true,
+        controls = {
+          enabled = true,
+          position = "right",
+          -- No "disconnect": it only detaches and leaves the JVM running.
+          buttons = { "play", "step_into", "step_over", "step_out", "step_back", "run_last", "terminate" },
+        },
+      },
+      windows = {
+        size = 15, -- absolute height (> 1) of the bottom panel
+        position = "below",
+      },
+      virtual_text = {
+        enabled = true, -- replaces nvim-dap-virtual-text
+        -- IDEA-style: render `name = value` at end of line instead of splicing
+        -- the raw value into the middle of the code (inline).
+        position = "eol",
+        format = function(variable)
+          local value = tostring(variable.value or ""):gsub("%s+", " ")
+          if #value > 60 then
+            value = value:sub(1, 60) .. "…"
+          end
+          return " " .. value
+        end,
+      },
+      auto_toggle = true, -- open on session start, close when the session ends
+      follow_tab = true,
+    },
     config = function(_, opts)
+      require("dap-view").setup(opts)
+
+      -- Make every new session reopen on `default_section` (console), even if
+      -- the user switched tabs during the previous session.
       local dap = require("dap")
-      local dapui = require("dapui")
-      dapui.setup(opts)
-      dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open({})
+      local dv_state = require("dap-view.state")
+      for _, event in ipairs({ "event_terminated", "disconnect" }) do
+        dap.listeners.before[event]["dap_view_console_default"] = function()
+          dv_state.current_section = nil
+        end
+        dap.listeners.after[event]["dap_kill_debuggee_terminal"] = function(session)
+          kill_debuggee_terminal(session)
+        end
       end
-      dap.listeners.before.event_terminated["dapui_config"] = function()
-        dapui.close({})
+
+      -- Object value popup. Java Maps/collections are shown by the adapter as
+      -- `Type@id size=N`; evaluating `String.valueOf(expr)` yields the real
+      -- value (e.g. `{9=1, ...}`) which we render in dap-view's hover float.
+      local function expr_at_cursor()
+        local line = vim.api.nvim_win_get_cursor(0)[1]
+        local section = dv_state.current_section
+
+        if section == "scopes" then
+          local path = dv_state.line_to_variable_path[line]
+          return path and dv_state.variable_path_to_evaluate_name[path]
+        elseif section == "watches" then
+          local expression = dv_state.expression_views_by_line[line]
+          if expression then
+            return expression.expression
+          end
+          local variable = dv_state.variable_views_by_line[line]
+          return variable and variable.view.variable.evaluateName
+        end
       end
-      dap.listeners.before.event_exited["dapui_config"] = function()
-        dapui.close({})
-      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "dap-view",
+        callback = function(args)
+          vim.keymap.set("n", "<leader>dv", function()
+            local expr = expr_at_cursor()
+            if not expr then
+              vim.notify("No variable under cursor", vim.log.levels.WARN)
+              return
+            end
+            require("dap-view").hover(("String.valueOf(%s)"):format(expr), true)
+          end, { buffer = args.buf, desc = "Object Value (popup)" })
+        end,
+      })
+
+      -- REPL as a floating popup
+      local repl_win
+      vim.api.nvim_create_user_command("DapViewFloatRepl", function()
+        local width = math.min(120, math.floor(vim.o.columns * 0.8))
+        local height = math.min(30, math.floor(vim.o.lines * 0.4))
+        local buf = vim.api.nvim_create_buf(false, true)
+        repl_win = vim.api.nvim_open_win(buf, true, {
+          relative = "editor",
+          width = width,
+          height = height,
+          row = math.floor((vim.o.lines - height) / 2),
+          col = math.floor((vim.o.columns - width) / 2),
+          border = "rounded",
+          title = "DAP REPL",
+          title_pos = "center",
+        })
+        vim.api.nvim_set_current_win(repl_win)
+      end, {})
+
+      vim.keymap.set("n", "<leader>dr", function()
+        require("dap").repl.toggle({}, "DapViewFloatRepl")
+        if repl_win and vim.api.nvim_win_is_valid(repl_win) then
+          vim.api.nvim_set_current_win(repl_win)
+          vim.cmd.startinsert()
+        end
+      end, { desc = "DAP REPL (Float)" })
     end,
   },
   {

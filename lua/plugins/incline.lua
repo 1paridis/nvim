@@ -10,6 +10,9 @@ return {
                 padding = 0,
                 margin = { horizontal = 0 },
             },
+            ignore = {
+                filetypes = { "dap-view", "dap-view-term", "dap-view-hover", "dap-repl" },
+            },
             render = function(props)
                 local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
                 if filename == "" then
