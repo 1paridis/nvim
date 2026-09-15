@@ -1,5 +1,6 @@
 local ok, secrets = pcall(require, "config.secrets")
 local ark_api_key = (ok and secrets.ark_api_key) or vim.env.ARK_API_KEY
+local ooioo_api_key = (ok and secrets.ooioo_api_key) or vim.env.OOIOO_API_KEY
 
 return {
   "olimorris/codecompanion.nvim",
@@ -10,6 +11,25 @@ return {
   opts = {
     adapters = {
       http = {
+        ooioo = function()
+          return require("codecompanion.adapters").extend("openai_compatible", {
+            name = "ooioo",
+            formatted_name = "ooioo GPT 5.6 Sol",
+            env = {
+              url = "https://ooioo.work/v1",
+              chat_url = "/chat/completions",
+              api_key = ooioo_api_key,
+            },
+            schema = {
+              model = {
+                default = "gpt-5.6-sol",
+                choices = {
+                  ["gpt-5.6-sol"] = { formatted_name = "GPT 5.6 Sol" },
+                },
+              },
+            },
+          })
+        end,
         vol = function()
           return require("codecompanion.adapters").extend("openai_compatible", {
             name = "vol",
@@ -31,13 +51,13 @@ return {
             },
           })
         end,
-      },
+      }
     },
     interactions = {
-      chat = { adapter = "vol" },
-      inline = { adapter = "vol" },
-      cmd = { adapter = "vol" },
-      background = { adapter = "vol" },
+      chat = { adapter = "ooioo" },
+      inline = { adapter = "ooioo" },
+      cmd = { adapter = "ooioo" },
+      background = { adapter = "ooioo" },
     },
   },
   keys = {
