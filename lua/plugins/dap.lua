@@ -69,7 +69,7 @@ return {
       --   },
       -- }
       vim.fn.sign_define("DapStopped",
-        { text = "󰁕 ", texthl = "DiagnosticWarn", linehl = "DapStoppedLine", numhl = "DapStoppedLine" })
+        { text = " ", texthl = "DiagnosticWarn", linehl = "DapStoppedLine" })
       vim.fn.sign_define("DapBreakpoint", { text = " ", texthl = "DiagnosticInfo" })
       vim.fn.sign_define("DapBreakpointCondition", { text = " ", texthl = "DiagnosticInfo" })
       vim.fn.sign_define("DapBreakpointRejected", { text = " ", texthl = "DiagnosticError" })
