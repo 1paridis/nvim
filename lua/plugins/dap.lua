@@ -31,8 +31,6 @@ return {
 
     -- stylua: ignore
     keys = {
-      { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
-      { "<leader>db", function() require("dap").toggle_breakpoint() end,                                    desc = "Toggle Breakpoint" },
       { "<F5>",       function() require("dap").continue() end,                                             desc = "Run/Continue" },
       { "<leader>da", function() require("dap").continue({ before = get_args }) end,                        desc = "Run with Args" },
       { "<leader>dc", function() require("dap").run_to_cursor() end,                                        desc = "Run to Cursor" },
@@ -41,7 +39,7 @@ return {
       { "<leader>dj", function() require("dap").down() end,                                                 desc = "Down" },
       { "<leader>dk", function() require("dap").up() end,                                                   desc = "Up" },
       { "<leader>dl", function() require("dap").run_last() end,                                             desc = "Run Last" },
-      { "<S-F7>",     function() require("dap").step_out() end,                                             desc = "Step Out" },
+      { "<S-F8>",     function() require("dap").step_out() end,                                             desc = "Step Out" },
       { "<F8>",       function() require("dap").step_over() end,                                            desc = "Step Over" },
       { "<leader>dP", function() require("dap").pause() end,                                                desc = "Pause" },
       { "<leader>ds", function() require("dap").session() end,                                              desc = "Session" },
@@ -50,8 +48,9 @@ return {
 
     config = function()
       local dap = require("dap")
-      -- highlight when stopped on a line
-      vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
+      -- highlight when stopped on a line (bright yellow bg, dark text)
+      local cp = require("catppuccin.palettes").get_palette("mocha")
+      vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, fg = cp.base, bg = cp.yellow })
 
       -- setup dap config by VsCode launch.json file
       local vscode = require("dap.ext.vscode")
@@ -75,6 +74,26 @@ return {
       vim.fn.sign_define("DapBreakpointCondition", { text = " ", texthl = "DiagnosticInfo" })
       vim.fn.sign_define("DapBreakpointRejected", { text = " ", texthl = "DiagnosticError" })
       vim.fn.sign_define("DapLogPoint", { text = ".>", texthl = "DiagnosticInfo" })
+    end,
+  },
+
+  -- Persist breakpoints to disk so they survive restarts.
+  -- `always_reload` is required because persistence.nvim restores buffers via a
+  -- session; without it breakpoints are not re-applied on startup.
+  {
+    "Weissle/persistent-breakpoints.nvim",
+    dependencies = { "mfussenegger/nvim-dap" },
+    event = { "BufReadPre", "BufNewFile" },
+    -- stylua: ignore
+    keys = {
+      { "<leader>db", function() require("persistent-breakpoints.api").toggle_breakpoint() end,           desc = "Toggle Breakpoint" },
+      { "<leader>dB", function() require("persistent-breakpoints.api").set_conditional_breakpoint() end, desc = "Breakpoint Condition" },
+    },
+    config = function()
+      require("persistent-breakpoints").setup({
+        load_breakpoints_event = { "BufReadPost" },
+        always_reload = true,
+      })
     end,
   },
 
