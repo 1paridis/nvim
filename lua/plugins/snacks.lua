@@ -134,6 +134,8 @@ return {
             { "<leader>bo", function() Snacks.bufdelete.other() end,              desc = "Delete Other Buffers" },
             { "<leader>cR", function() Snacks.rename.rename_file() end,           desc = "Rename File" },
             { "<leader>gB", function() Snacks.gitbrowse() end,                    desc = "Git Browse",               mode = { "n", "v" } },
+            { "<leader>gb", function() Snacks.picker.git_log_line() end,          desc = "Git Log Line" },
+            { "<leader>gf", function() Snacks.picker.git_log_file() end,          desc = "Git Log File" },
             { "<leader>un", function() Snacks.notifier.hide() end,                desc = "Dismiss All Notifications" },
             { "<c-/>",      function() Snacks.terminal() end,                     desc = "Toggle Terminal" },
             { "<c-_>",      function() Snacks.terminal() end,                     desc = "which_key_ignore" },
