@@ -16,12 +16,13 @@
 
 | 依赖 | 说明 |
 | --- | --- |
-| Neovim | >= 0.11（使用 `vim.lsp.enable` 等新 API，推荐最新稳定版） |
+| Neovim | >= 0.12（当前 nvim-treesitter main 分支要求） |
+| Treesitter 构建工具 | `tree-sitter-cli` >= 0.26.1（通过系统包管理器安装）、C 编译器、`tar`、`curl` |
 | git | 用于插件管理与 GitHub 相关功能 |
 | ripgrep (`rg`) | 模糊搜索内容（picker grep） |
 | Nerd Font | 图标正常显示，推荐 `Maple Mono NF` |
 | 剪贴板工具 | Linux 下需 `xclip` / `wl-clipboard`，系统剪贴板才能生效 |
-| Node.js / npm | 部分 LSP 与工具依赖（如 Copilot 补全） |
+| Node.js / npm | 前端语言服务器与 Prettier 等工具依赖 |
 
 > 首次启动会自动克隆 lazy.nvim 并安装所有插件，请保持网络畅通。
 
@@ -71,6 +72,15 @@
 - **前端**：TypeScript / JavaScript 由 `vtsls` 支持，Vue 由 `vue-language-server` 支持（通过 `@vue/typescript-plugin` 与 vtsls 协作），另有 `css-lsp`、`html-lsp`、`tailwindcss-language-server`、`eslint-lsp`、`emmet-language-server`；相关配置见 `lua/config/lsp.lua`
 
 其他语言的服务器可在 `lua/plugins/mason.lua` 的 `ensure_installed` 中取消注释后安装。
+
+## 前端格式化与补全
+
+- `<Space>cf`：通过 Conform 格式化当前文件；可视模式下格式化选区。默认不启用保存时格式化。
+- JS / TS / JSX / TSX / Vue / CSS / SCSS / Less / HTML / JSON / JSONC / YAML / Markdown 使用 Prettier，优先项目的 `node_modules/.bin/prettier`，其次使用 Mason 安装的版本。
+- 项目中的 Prettier 配置会自动读取；需要特定版本或插件时，建议在项目中安装。使用 `:ConformInfo` 检查实际使用的格式化器。
+- Prettier 不可用时回退到对应 LSP，前端文件限定单一服务器，避免重复格式化。
+- 补全由 blink.cmp 提供（LSP、路径、片段、缓冲区），不再启用 Copilot 补全源；空格保持普通输入。
+- `lua/config/vue.lua` 负责兼容 Vue language-server 新旧 TypeScript 转发消息格式。
 
 ## AI 助手（CodeCompanion）
 

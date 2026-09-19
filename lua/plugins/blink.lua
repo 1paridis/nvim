@@ -1,7 +1,7 @@
 return {
     {
         'saghen/blink.cmp',
-        dependencies = { 'rafamadriz/friendly-snippets', "fang2hou/blink-copilot" },
+        dependencies = { 'rafamadriz/friendly-snippets' },
         version = '1.*',
         event = { "InsertEnter", "CmdlineEnter" },
         ---@module 'blink.cmp'
@@ -11,13 +11,12 @@ return {
                 preset = 'enter',
                 ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
                 ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
-                ['<Space>'] = { 'accept', 'fallback' },
             },
 
             appearance = {
                 -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
                 -- Adjusts spacing to ensure icons are aligned
-                nerd_font_variant = 'Maple Mono NF'
+                nerd_font_variant = 'normal'
             },
             completion = {
                 accept = {
@@ -47,15 +46,7 @@ return {
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
             sources = {
-                default = {"copilot", 'lsp', 'path', 'snippets', 'buffer' },
-                providers = {
-                    copilot = {
-                        name = "copilot",
-                        module = "blink-copilot",
-                        score_offset = 100,
-                        async = true,
-                    },
-                },
+                default = { 'lsp', 'path', 'snippets', 'buffer' },
             },
             cmdline = {
                 enabled = true,
