@@ -1,5 +1,9 @@
 return {
     'nvim-lualine/lualine.nvim',
-    opts = {},
-    dependencies = { 'nvim-tree/nvim-web-devicons' }
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+        sections = {
+            lualine_c = { { 'filename', path = 1, shorting_target = 60 } },
+        },
+    },
 }
