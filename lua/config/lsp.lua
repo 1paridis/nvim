@@ -1,6 +1,6 @@
 -- Mason 安装目录（Mason v2 会设置 $MASON）
-local mason_root = vim.fn.expand("$MASON")
-if mason_root == "" then
+local mason_root = vim.env.MASON
+if not mason_root or mason_root == "" then
     mason_root = vim.fn.stdpath("data") .. "/mason"
 end
 
@@ -34,6 +34,11 @@ vim.lsp.config("vtsls", {
             },
         },
     },
+})
+
+-- 覆盖 lspconfig 的旧转发逻辑，兼容 Vue language-server 的新旧协议。
+vim.lsp.config("vue_ls", {
+    on_init = require("config.vue").on_init,
 })
 
 vim.lsp.enable({
