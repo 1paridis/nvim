@@ -26,7 +26,7 @@ return {
                 "stylua",
                 -- "goimports",
                 -- Note: gofmt comes with Go installation, not managed by Mason
-                -- "prettier",
+                "prettier", -- 项目未安装 Prettier 时的后备
                 -- "black",
                 -- "isort",
 

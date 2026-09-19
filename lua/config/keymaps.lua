@@ -25,7 +25,7 @@ map({ "n", "v" }, "<leader>qw", "<cmd>q<cr>", { desc = "Close Window" })
 -- Code
 map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
 map({ "n", "v" }, "<leader>cc", vim.lsp.codelens.refresh, { desc = "Run Codelens" })
-map({ "n", "v" }, "<leader>cf", function() vim.lsp.buf.format { async = true } end, { desc = "Format Document" })
+map({ "n", "v" }, "<leader>cf", function() require("conform").format { async = true } end, { desc = "Format Document / Selection" })
 map({ "n", "v" }, "<leader>cr", vim.lsp.buf.rename, { desc = "rename" })
 
 map("n", "<c-/>", function() Snacks.terminal() end, { desc = "Terminal (cwd)" })
