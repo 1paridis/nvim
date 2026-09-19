@@ -11,13 +11,16 @@ return {
                 "lua-language-server",         -- Lua LSP
                 -- "gopls",                       -- Go LSP
                 -- "zls",                         -- Zig LSP
-                -- "typescript-language-server",  -- TypeScript LSP
-                -- "rust-analyzer",               -- Rust LSP
                 -- "intelephense",                -- PHP LSP
-                -- "tailwindcss-language-server", -- Tailwind CSS LSP
-                -- "html-lsp",                    -- HTML LSP
-                -- "css-lsp",                     -- CSS LSP
-                -- "vue-language-server",         -- Vue LSP
+
+                -- Frontend LSP
+                "vtsls",                        -- TypeScript / JavaScript LSP（同时为 .vue 提供 TS 能力）
+                "vue-language-server",          -- Vue LSP
+                "css-lsp",                      -- CSS / SCSS / Less LSP
+                "html-lsp",                     -- HTML LSP
+                "tailwindcss-language-server",  -- Tailwind CSS LSP
+                "eslint-lsp",                   -- ESLint
+                "emmet-language-server",        -- Emmet 缩写补全
 
                 -- Formatters (for conform.nvim and general use)
                 "stylua",

@@ -68,6 +68,7 @@
 - **Java**：通过 `nvim-jdtls` 接入，自动识别 Maven / Gradle 项目，按项目隔离 workspace，支持 Lombok、源码跳转与 DAP 调试（`java-debug-adapter`）
 - **Rust**：通过 `rustaceanvim` 接入 rust-analyzer，`Cargo.toml` 由 `crates.nvim` 提供补全与版本管理，调试使用 `codelldb`
 - **Lua**：通过 `lua-language-server` 支持，并使用 `stylua` 格式化
+- **前端**：TypeScript / JavaScript 由 `vtsls` 支持，Vue 由 `vue-language-server` 支持（通过 `@vue/typescript-plugin` 与 vtsls 协作），另有 `css-lsp`、`html-lsp`、`tailwindcss-language-server`、`eslint-lsp`、`emmet-language-server`；相关配置见 `lua/config/lsp.lua`
 
 其他语言的服务器可在 `lua/plugins/mason.lua` 的 `ensure_installed` 中取消注释后安装。
 

@@ -8,7 +8,10 @@ return {
             local treesitter = require("nvim-treesitter")
 
             treesitter.install{
-                'json', 'lua', 'java', 'rust'
+                'json', 'lua', 'java', 'rust',
+                -- frontend
+                'javascript', 'typescript', 'tsx', 'vue',
+                'css', 'scss', 'html',
             }
         end,
     },
