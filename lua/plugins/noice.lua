@@ -7,6 +7,11 @@ return {
             view = "cmdline_popup"
         },
         lsp = {
+            signature = {
+                auto_open = {
+                    enabled = false, -- 禁止输入时自动弹出函数签名和文档
+                },
+            },
             -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
             override = {
                 ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
