@@ -5,6 +5,11 @@ return {
     opts = {
         filesystem = {
             group_empty_dirs = true,
+            filtered_items = {
+                visible = false,
+                hide_dotfiles = false,
+                hide_gitignored = true,
+            },
             follow_current_file = {
                 enabled = true,
                 leave_dirs_open = false,
