@@ -2,3 +2,4 @@ lazy-lock.json
 openspec/
 .pi/
 lua/config/secrets.lua
+nvim.log
