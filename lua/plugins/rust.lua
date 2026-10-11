@@ -73,8 +73,10 @@ return {
             local codelldb = vim.fn.exepath("codelldb")
             local codelldb_lib_ext = io.popen("uname"):read("*l") == "Linux" and ".so" or ".dylib"
             local library_path = vim.fn.stdpath("data") .. "/mason/opt/lldb/lib/liblldb" .. codelldb_lib_ext
+            local adapter = require("rustaceanvim.config").get_codelldb_adapter(codelldb, library_path)
+            adapter.enrich_config = require("config.rust_dap").enrich_config
             opts.dap = {
-                adapter = require("rustaceanvim.config").get_codelldb_adapter(codelldb, library_path),
+                adapter = adapter,
             }
 
             vim.g.rustaceanvim = vim.tbl_deep_extend("keep", vim.g.rustaceanvim or {}, opts or {})
