@@ -4,7 +4,10 @@ return {
     branch = "v3.x",
     opts = {
         filesystem = {
+            -- Detect directory chains before rendering; shallow grouping can
+            -- discard loaded sibling children when replacing existing Nui nodes.
             group_empty_dirs = true,
+            scan_mode = "deep",
             filtered_items = {
                 visible = false,
                 hide_dotfiles = true,
