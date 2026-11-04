@@ -71,6 +71,10 @@
 - **Lua**：通过 `lua-language-server` 支持，并使用 `stylua` 格式化
 - **前端**：TypeScript / JavaScript 由 `vtsls` 支持，Vue 由 `vue-language-server` 支持（通过 `@vue/typescript-plugin` 与 vtsls 协作），另有 `css-lsp`、`html-lsp`、`tailwindcss-language-server`、`eslint-lsp`、`emmet-language-server`；相关配置见 `lua/config/lsp.lua`
 
+Java Maven 项目按 `F5` 时，会先单选 Maven profile（或默认模式），同步各模块配置、等待依赖刷新与编译成功后再进入原有调试配置选择。候选项从 POM 读取，上次成功选择会保存并排在首位。已有调试会话时 `F5` 继续执行；Gradle 项目和其他语言保持原有行为。Spring 的运行环境参数沿用调试配置，不随 Maven profile 改变。编译由 JDTLS 完成，不执行 `mvn package`。
+
+Maven 调试功能由独立插件 [java-maven.nvim](https://github.com/1paridis/java-maven.nvim) 提供。本配置通过 lazy.nvim 从 `1paridis/java-maven.nvim` 仓库安装；插件自动接入 Java 缓冲区的 `F5`，并统一 Maven 多模块项目的 JDTLS 根目录与 workspace，无需修改通用 DAP 配置或 Java ftplugin。插件 README 包含安装、默认配置和测试说明。
+
 其他语言的服务器可在 `lua/plugins/mason.lua` 的 `ensure_installed` 中取消注释后安装。
 
 ## 前端格式化与补全
