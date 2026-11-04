@@ -18,6 +18,27 @@ return {
         on_attach = function(buffer)
             local wk = require("which-key")
             local gs = require("gitsigns")
+            local function map(lhs, rhs, desc)
+                vim.keymap.set("n", lhs, rhs, { buffer = buffer, desc = desc, silent = true })
+            end
+
+            map("]h", function()
+                if vim.wo.diff then
+                    vim.cmd.normal({ "]c", bang = true })
+                else
+                    gs.nav_hunk("next")
+                end
+            end, "Next Hunk")
+            map("[h", function()
+                if vim.wo.diff then
+                    vim.cmd.normal({ "[c", bang = true })
+                else
+                    gs.nav_hunk("prev")
+                end
+            end, "Prev Hunk")
+            map("]H", function() gs.nav_hunk("last") end, "Last Hunk")
+            map("[H", function() gs.nav_hunk("first") end, "First Hunk")
+
             wk.add({
                 {
                     mode = "n",
