@@ -13,6 +13,7 @@ return {
       { "<leader>d", group = "Debug" },
       { "<leader>f", group = "Find" },
       { "<leader>g", group = "Git" },
+      { "<leader>m", group = "Minimap" },
       { "<leader>q", group = "Quit/Session" },
       { "<leader>s", group = "Search" },
       { "<leader>u", group = "UI/Toggles" },
