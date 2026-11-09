@@ -88,14 +88,16 @@ Maven 调试功能由独立插件 [java-maven.nvim](https://github.com/1paridis/
 
 ## AI 助手（CodeCompanion）
 
-配置默认接入火山方舟（vol）适配器。API Key 从 `lua/config/secrets.lua` 读取（该文件已被 `.gitignore` 忽略，不会提交），格式如下：
+默认接入 CodeCompanion 内置的 DeepSeek 适配器（`https://api.deepseek.com`），聊天、内联、命令与后台交互均使用该适配器。默认模型为 `deepseek-flash`（也可选 `deepseek-v4-pro`），模型与参数可在聊天缓冲区中调整。
+
+API Key 从 `lua/config/secrets.lua` 读取（该文件已被 `.gitignore` 忽略，不会提交），格式如下：
 
 ```lua
 -- lua/config/secrets.lua
 return {
-  ark_api_key = "你的 API Key",
+  deepseek_api_key = "你的 DeepSeek API Key",
 }
 ```
 
-也可改用环境变量 `ARK_API_KEY`。默认模型为 `deepseek-v4-flash-ga-260731`，其余可选模型见 `lua/plugins/codecompanion.lua`。
+也可改用环境变量 `DEEPSEEK_API_KEY`。插件同时保留了 `ooioo` 适配器，如需切换默认提供商，修改 `lua/plugins/codecompanion.lua` 中 `interactions` 的 `adapter` 即可。
 

@@ -1,6 +1,8 @@
 local ok, secrets = pcall(require, "config.secrets")
-local ark_api_key = (ok and secrets.ark_api_key) or vim.env.ARK_API_KEY
-local ooioo_api_key = (ok and secrets.ooioo_api_key) or vim.env.OOIOO_API_KEY
+secrets = ok and secrets or {}
+
+local ooioo_api_key = secrets.ooioo_api_key or vim.env.OOIOO_API_KEY
+local deepseek_api_key = secrets.deepseek_api_key or vim.env.DEEPSEEK_API_KEY
 
 return {
   "olimorris/codecompanion.nvim",
@@ -11,6 +13,19 @@ return {
   opts = {
     adapters = {
       http = {
+        deepseek = function()
+          return require("codecompanion.adapters").extend("deepseek", {
+            env = {
+              api_key = deepseek_api_key,
+            },
+            schema = {
+              model = {
+                -- canonical id from https://api.deepseek.com/models
+                default = "deepseek-flash",
+              },
+            },
+          })
+        end,
         ooioo = function()
           return require("codecompanion.adapters").extend("openai_compatible", {
             name = "ooioo",
@@ -30,34 +45,13 @@ return {
             },
           })
         end,
-        vol = function()
-          return require("codecompanion.adapters").extend("openai_compatible", {
-            name = "vol",
-            formatted_name = "火山方舟 vol",
-            env = {
-              url = "https://ark.cn-beijing.volces.com/api/coding/v3",
-              chat_url = "/chat/completions",
-              api_key = ark_api_key,
-            },
-            schema = {
-              model = {
-                default = "deepseek-v4-flash-ga-260731",
-                choices = {
-                  ["deepseek-v4-flash-ga-260731"] = { formatted_name = "DeepSeek V4 Flash" },
-                  ["deepseek-v4-pro-ga-260813"]  = { formatted_name = "DeepSeek V4 Pro" },
-                  ["glm-5.3"]                    = { formatted_name = "GLM 5.3" },
-                },
-              },
-            },
-          })
-        end,
       }
     },
     interactions = {
-      chat = { adapter = "ooioo" },
-      inline = { adapter = "ooioo" },
-      cmd = { adapter = "ooioo" },
-      background = { adapter = "ooioo" },
+      chat = { adapter = "deepseek" },
+      inline = { adapter = "deepseek" },
+      cmd = { adapter = "deepseek" },
+      background = { adapter = "deepseek" },
     },
   },
   keys = {
