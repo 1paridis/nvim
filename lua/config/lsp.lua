@@ -43,6 +43,7 @@ vim.lsp.config("vue_ls", {
 
 vim.lsp.enable({
     -- "lua_ls",
+    "jdtls",
     "vtsls",
     "vue_ls",
     "cssls",

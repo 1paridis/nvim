@@ -1,7 +1,7 @@
 return {
     {
         "mfussenegger/nvim-jdtls",
-        ft = { "java" },
+        lazy = false, -- 在 config.lsp 启用 jdtls 前加载服务器定义
         dependencies = {
             "folke/which-key.nvim",
         },

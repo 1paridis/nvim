@@ -6,6 +6,6 @@ return {
         ft = { "java" },
         cmd = { "JavaMavenDebug" },
         dependencies = { "mfussenegger/nvim-dap", "mfussenegger/nvim-jdtls" },
-        opts = {},
+        opts = { jdtls_root = false }, -- 由 after/lsp/jdtls.lua 解析 Maven 根目录
     },
 }
