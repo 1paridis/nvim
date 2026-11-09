@@ -7,7 +7,6 @@ return {
     -- refer to the configuration section below
     preset = "helix",
     spec = {
-      { "<leader>a", group = "AI (CodeCompanion)" },
       { "<leader>b", group = "Buffer" },
       { "<leader>c", group = "Code" },
       { "<leader>d", group = "Debug" },

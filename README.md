@@ -1,6 +1,6 @@
 # Neovim 配置
 
-一套基于 [lazy.nvim](https://github.com/folke/lazy.nvim) 的个人 Neovim 配置，开箱即用，内置代码补全、LSP、语法高亮、文件树、Git、调试与 AI 助手。
+一套基于 [lazy.nvim](https://github.com/folke/lazy.nvim) 的个人 Neovim 配置，开箱即用，内置代码补全、LSP、语法高亮、文件树、Git 与调试。
 
 ## 能用来做什么
 
@@ -9,7 +9,6 @@
 - **调试（DAP）**：断点、单步执行、变量查看，Java 与 Rust 开箱可用
 - **查找与搜索**：模糊查找文件 / 内容 / 缓冲区 / 符号 / Git 历史
 - **Git**：行内 blame、diff 标记、提交与分支管理
-- **AI 助手**：基于 CodeCompanion，支持对话、内联改写、生成命令
 - **界面**：状态栏、缩进线、通知、快捷键提示、会话恢复
 
 ## 环境要求
@@ -60,7 +59,6 @@
   - `<Space>/`：全局搜索内容（grep）
   - `Ctrl + /`：打开 / 关闭终端
   - `gd`：跳转定义，`gr`：查找引用
-  - `<Space>ac`：打开 AI 对话窗口
 
 ## 语言支持
 
@@ -85,19 +83,3 @@ Maven 调试功能由独立插件 [java-maven.nvim](https://github.com/1paridis/
 - Prettier 不可用时回退到对应 LSP，前端文件限定单一服务器，避免重复格式化。
 - 补全由 blink.cmp 提供（LSP、路径、片段、缓冲区），不再启用 Copilot 补全源；空格保持普通输入。
 - `lua/config/vue.lua` 负责兼容 Vue language-server 新旧 TypeScript 转发消息格式。
-
-## AI 助手（CodeCompanion）
-
-默认接入 CodeCompanion 内置的 DeepSeek 适配器（`https://api.deepseek.com`），聊天、内联、命令与后台交互均使用该适配器。默认模型为 `deepseek-flash`（也可选 `deepseek-v4-pro`），模型与参数可在聊天缓冲区中调整。
-
-API Key 从 `lua/config/secrets.lua` 读取（该文件已被 `.gitignore` 忽略，不会提交），格式如下：
-
-```lua
--- lua/config/secrets.lua
-return {
-  deepseek_api_key = "你的 DeepSeek API Key",
-}
-```
-
-也可改用环境变量 `DEEPSEEK_API_KEY`。插件同时保留了 `ooioo` 适配器，如需切换默认提供商，修改 `lua/plugins/codecompanion.lua` 中 `interactions` 的 `adapter` 即可。
-
